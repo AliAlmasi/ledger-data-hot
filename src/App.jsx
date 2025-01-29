@@ -1,35 +1,89 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { HotTable } from "@handsontable/react";
+import { registerAllModules } from "handsontable/registry";
+import { HyperFormula } from "hyperformula";
 
-function App() {
-  const [count, setCount] = useState(0)
+import "handsontable/styles/handsontable.min.css";
+import "handsontable/styles/ht-theme-main.min.css";
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+import { useState } from "react";
+
+import { AmountConfig, DepartmentConfig } from "./columns";
+
+registerAllModules();
+
+const STATISTICS = [
+	["Sum", "Average", "Max"],
+	[
+		"=SUM(ledger!C:ledger!C)",
+		"=AVERAGE(ledger!C:ledger!C)",
+		"=MAX(ledger!C:ledger!C)"
+	]
+];
+
+export default function App() {
+	const hyperformulaInstance = HyperFormula.buildEmpty({
+		licenseKey: "internal-use-in-handsontable"
+	});
+
+	const [data, setData] = useState([
+		["Setting up the ledger", "Engineering", 400]
+	]);
+	return (
+		<div style={{ padding: "1rem 2rem" }}>
+			<h1>Ledger with Handsontable</h1>
+			<hr />
+			<div
+				style={{
+					backgroundColor: "darkgray",
+					padding: 20,
+					fontSize: 20
+				}}
+			>
+				<HotTable
+					// className="htCenter htMiddle"
+					data={data}
+					rowHeaders={true}
+					colHeaders={["Note", "Department", "Amount"]}
+					height="auto"
+					licenseKey="non-commercial-and-evaluation"
+					columns={[
+						{
+							type: "text"
+						},
+						DepartmentConfig,
+						AmountConfig
+					]}
+					colWidths={150}
+					formulas={{
+						engine: hyperformulaInstance,
+						sheetName: "ledger"
+					}}
+				/>
+				<button
+					style={{
+						marginTop: 10,
+						fontSize: 16,
+						outline: 0,
+						padding: "3px 20px"
+					}}
+					onClick={() => setData((currData) => [...currData, ["", "", ""]])}
+				>
+					Add row
+				</button>
+			</div>
+			<h2>Statistics</h2>
+			<HotTable
+				className="htCenter htMiddle"
+				data={STATISTICS}
+				height="auto"
+				formulas={{
+					engine: hyperformulaInstance,
+					sheetName: "statistics"
+				}}
+				columns={[AmountConfig, AmountConfig, AmountConfig]}
+				licenseKey="non-commercial-and-evaluation"
+				fillHandle="false"
+			/>
+		</div>
+	);
 }
-
-export default App
