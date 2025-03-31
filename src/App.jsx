@@ -1,6 +1,7 @@
 import { HotTable } from "@handsontable/react";
 import { registerAllModules } from "handsontable/registry";
 import { HyperFormula } from "hyperformula";
+import { registerLanguageDictionary, faIR } from 'handsontable/i18n';
 
 import "handsontable/styles/handsontable.min.css";
 import "handsontable/styles/ht-theme-main.min.css";
@@ -10,6 +11,7 @@ import { useState } from "react";
 import { AmountConfig, DepartmentConfig } from "./columns";
 
 registerAllModules();
+registerLanguageDictionary(faIR);
 
 const STATISTICS = [
 	["Sum", "Average", "Max"],
@@ -42,6 +44,7 @@ export default function App() {
 				<HotTable
 					// className="htCenter htMiddle"
 					data={data}
+					language={faIR.languageCode}
 					rowHeaders={true}
 					colHeaders={["Note", "Department", "Amount"]}
 					height="auto"
@@ -75,6 +78,7 @@ export default function App() {
 			<HotTable
 				className="htCenter htMiddle"
 				data={STATISTICS}
+				language={faIR.languageCode}
 				height="auto"
 				formulas={{
 					engine: hyperformulaInstance,
